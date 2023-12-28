@@ -25,7 +25,7 @@ namespace EmployeeManagmentTests
         }
 
         [Fact]
-        public async Task CreateAsync_ShouldAddEmployeeToRepository()
+        public async Task AddAsync_ShouldAddEmployeeToRepository()
         {
             var Model = new EmployeeDto()
             { 
@@ -38,6 +38,54 @@ namespace EmployeeManagmentTests
             var result  =await employeeService.AddAsync(Model);
 
             mockRepository.Verify(repo => repo.Add(It.IsAny<Employee>()), Times.Once);
+        }
+
+        [Fact]
+        public void GetAll_ReturnsEmployeeDtos_WhenEmployeesExist()
+        {
+            // Arrange
+            var repositoryMock = new Mock<IGenericRepository<Employee>>();
+            var employeeService = new EmployeeService(repositoryMock.Object); 
+
+            var employees = new List<Employee>
+        {
+            new Employee { Id = 1, FirstName = "John", MiddleName = "Doe" },
+            new Employee { Id = 2, FirstName = "Jane", MiddleName = "josay"}
+        };
+
+            repositoryMock.Setup(repo => repo.GetAll()).Returns(employees.AsQueryable());
+
+            // Act
+            var result = employeeService.GetAll();
+
+            // Assert
+            Assert.Contains(result, x => x.FirstName == "John");
+            Assert.NotEmpty(result);
+            Assert.Equal(2, result.Count); 
+
+        }
+
+       
+
+
+        [Fact]
+        public async Task Delete_ReturnsDeletedMessage_WhenEmployeeExists()
+        {
+            // Arrange
+            var repositoryMock = new Mock<IGenericRepository<Employee>>();
+            var employeeService = new EmployeeService(repositoryMock.Object);
+
+            var employee = new Employee { Id = 1, FirstName = "John", MiddleName = "Doe" };
+
+            repositoryMock.Setup(repo => repo.GetByID(employee.Id)).ReturnsAsync(employee);
+
+            // Act
+            var result = await employeeService.Delete(employee.Id);
+
+            // Assert
+            Assert.Equal("Deleted Record", result);
+            repositoryMock.Verify(repo => repo.Delete(employee.Id), Times.Once);
+            repositoryMock.Verify(repo => repo.SaveChange(), Times.Once);
         }
     }
 }
