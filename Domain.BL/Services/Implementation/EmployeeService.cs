@@ -1,4 +1,5 @@
-﻿using Domain.BL.Services.Interfaces;
+﻿using AutoMapper;
+using Domain.BL.Services.Interfaces;
 using Domain.DAL.GenericRepo;
 using Domian.Entities;
 using Domian.Entities.Dto;
@@ -17,7 +18,7 @@ namespace Domain.BL.Services.Implementation
         {
             _repository = repository;
         }
-        public async Task<EmployeeDto> CreateAsync(EmployeeDto employeeDto)
+        public async Task<EmployeeDto> AddAsync(EmployeeDto employeeDto)
         {
             var entity = setEntity(employeeDto);
             await _repository.Add(entity);
@@ -25,30 +26,62 @@ namespace Domain.BL.Services.Implementation
             return employeeDto;
         }
 
-        public void Delete(int id)
+        public async Task<string> Delete(int id)
         {
+            var employee = await _repository.GetByID(id);
+            if (employee == null)
+            {
+                return "No Record found";
+            }
             _repository.Delete(id);
             _repository.SaveChange();
+            return "Deleted Record";
         }
 
         public List<EmployeeDto> GetAll()
         {
             var employeeList = _repository.GetAll().ToList();
-            return employeeList.Select(setDto).ToList();
+            if (employeeList != null)
+            {
+                return employeeList.Select(setDto).ToList();
+
+            }
+            return new List<EmployeeDto>();
         }
 
         public async Task<EmployeeDto> GetByIdAsync(int id)
         {
             var employee = await _repository.GetByID(id);
-            return setDto(employee);
-
+            if (employee != null)
+            {
+                return setDto(employee);
+            }
+            return new();
         }
 
-        public EmployeeDto Update(EmployeeDto employeeDto)
+        public async Task<EmployeeDto> Update(int Id, EmployeeDto employeeDto)
         {
-            var updatedEmployee = _repository.update(setEntity(employeeDto));
-            _repository.SaveChange();
-            return setDto(updatedEmployee);
+            var employee = await _repository.GetByID(Id);
+            if (employee != null)
+            {
+                
+                employee = UpdateEmployee(employeeDto, employee);
+                var updatedEmployee = _repository.update(employee);
+                _repository.SaveChange();
+                return setDto(updatedEmployee);
+            }
+            return new();
+        }
+
+
+
+        private Employee UpdateEmployee(EmployeeDto dto, Employee entity)
+        {
+            
+            entity.FirstName = dto.FirstName;
+            entity.MiddleName = dto.MiddleName;
+            entity.LastName = dto.LastName;
+            return entity;
         }
 
         private EmployeeDto setDto(Employee employee)

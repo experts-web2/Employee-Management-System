@@ -11,8 +11,8 @@ namespace Domain.BL.Services.Interfaces
     {
         Task<EmployeeDto> GetByIdAsync(int id);
         List<EmployeeDto> GetAll();
-        Task<EmployeeDto> CreateAsync(EmployeeDto employeeDto);
-        EmployeeDto Update(EmployeeDto entity);
-        void Delete(int id);
+        Task<EmployeeDto> AddAsync(EmployeeDto employeeDto);
+        Task<EmployeeDto> Update(int Id, EmployeeDto employeeDto);
+        Task<string> Delete(int id);
     }
 }

@@ -7,10 +7,10 @@ namespace EmployeeManagmentSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeeController : ControllerBase
+    public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
-        public EmployeeController(IEmployeeService employeeService)
+        public EmployeesController(IEmployeeService employeeService)
         {
             _employeeService = employeeService;
         }
@@ -18,12 +18,12 @@ namespace EmployeeManagmentSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> AddEmployee(EmployeeDto employeeDto)
         {
-            var response = await _employeeService.CreateAsync(employeeDto);
+            var response = await _employeeService.AddAsync(employeeDto);
             return Ok(response);
         }
 
         [HttpGet]
-        public IActionResult GetEmployees()
+        public IActionResult Get()
         {
             var response =  _employeeService.GetAll();
             return Ok(response);
@@ -36,18 +36,18 @@ namespace EmployeeManagmentSystem.Controllers
             return Ok(response);
         }
 
-        [HttpPut]
-        public IActionResult UpdateEmployee(EmployeeDto employeeDto)
+        [HttpPut("Update/{Id}")]
+        public async Task<IActionResult> UpdateEmployee(int Id, [FromBody] EmployeeDto employeeDto)
         {
-            var response = _employeeService.Update(employeeDto);
+            var response =await _employeeService.Update(Id, employeeDto);
             return Ok(response);
         }
 
         [HttpDelete("Delete/{Id}")]
-        public IActionResult DeleteEmployee(int Id)
+        public async Task<IActionResult> DeleteEmployee(int Id)
         {
-            _employeeService.Delete(Id);
-            return Ok();
+           var result = await _employeeService.Delete(Id);
+            return Ok(result);
         }
     }
 }
