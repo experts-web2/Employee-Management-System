@@ -18,36 +18,76 @@ namespace EmployeeManagmentSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> AddEmployee(EmployeeDto employeeDto)
         {
-            var response = await _employeeService.AddAsync(employeeDto);
-            return Ok(response);
+            try
+            {
+                var response = await _employeeService.AddAsync(employeeDto);
+                return Ok(response);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Error occurred in adding employee.");
+            }
+           
         }
 
         [HttpGet]
         public IActionResult Get()
         {
-            var response =  _employeeService.GetAll();
-            return Ok(response);
+            try
+            {
+                var response = _employeeService.GetAll();
+                return Ok(response);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Error occurred in fetching employees list.");
+            }
+            
         }
 
         [HttpGet("{Id}")]
         public async Task<IActionResult> GetEmployeeById(int Id)
         {
-            var response =await _employeeService.GetByIdAsync(Id);
-            return Ok(response);
+            try
+            {
+                var response = await _employeeService.GetByIdAsync(Id);
+                return Ok(response);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Error occurred in fetching employee.");
+            }
+            
         }
 
         [HttpPut("Update/{Id}")]
         public async Task<IActionResult> UpdateEmployee(int Id, [FromBody] EmployeeDto employeeDto)
         {
-            var response =await _employeeService.Update(Id, employeeDto);
-            return Ok(response);
+            try
+            {
+                var response = await _employeeService.Update(Id, employeeDto);
+                return Ok(response);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Error occurred in update employee.");
+            }
+           
         }
 
         [HttpDelete("Delete/{Id}")]
         public async Task<IActionResult> DeleteEmployee(int Id)
         {
-           var result = await _employeeService.Delete(Id);
-            return Ok(result);
+            try
+            {
+                var result = await _employeeService.Delete(Id);
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Error occurred in deleting employee.");
+            }
+        
         }
     }
 }
